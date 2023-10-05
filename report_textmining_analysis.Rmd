@@ -1,0 +1,263 @@
+
+---
+title: "Textmining"
+output:
+  word_document: default
+  html_document: default
+---
+
+
+```{r, echo=FALSE}
+# install & load packages
+shhh <- suppressPackageStartupMessages
+packages_needed<-c( 'dplyr', 'purrr', 'here')
+installed<-installed.packages()
+sapply(packages_needed, function(p)
+  if(!p %in% installed[,1]){
+  install.packages(p)
+  }) 
+lapply(packages_needed, library, character.only=T)
+rm(installed, packages_needed)
+
+# set directories
+here()
+wordembedding.path <- paste0(here(),"/REPORT/WORD2VEC/")
+#wordembedding.path <- paste0(here(),"/REPORT/BERT/")
+topicmodels.path <-  paste0(here(),"/REPORT/TOPICMODEL")
+       
+options(warn=-1)
+```
+
+#Textmining
+
+In dit rapport worden de resultaten van de analyse -op hoofdlijnen- getoond. De volgende onderdelen komen aan de orde: exploratie, word embedding en topic modeling. 
+
+## Exploratie
+
+Hieronder zien we een wordcloud van de individuele -veel voorkomende- bijvoegelijke en zelfstandige naamwoorden. De tekstgrootte geeft een indruk van de frequentie waarmee de term is gehanteerd in de gehele tekstcollectie.  
+
+
+```{r pl1, echo=FALSE, fig.cap=" ", out.width = '100%'}
+
+graph.find <- list.files(path = here("REPORT/EXPLORATION/"), pattern="^Occurence_ADJ_NOUN_wordcloud.*.png"
+                               , full.names = TRUE)
+
+knitr::include_graphics(graph.find)
+
+
+```
+
+
+Hieronder worden de bijvoegelijke en zelfstandige naamwoorden gepresenteerd als woordcombinaties.
+
+```{r pl2, echo=FALSE, fig.cap=" ", out.width = '100%'}
+
+
+graph.find <- list.files(path = here("REPORT/EXPLORATION/"), pattern="^Cooccurrences_noun_adj_dependency_wordcloud.*.png"
+                               , full.names = TRUE)
+
+knitr::include_graphics(graph.find)
+
+
+```
+
+Als het belang van woorden wordt meegenomen (Google PageRank algoritme) dan ontstaan deze relevante woordcombinaties:
+
+```{r pl2a, echo=FALSE, fig.cap=" ", out.width = '100%'}
+
+graph.find <- list.files(path = here("REPORT/EXPLORATION/"), pattern="^Cooccurrences_googlepageranked_wordcloud.*.png"
+                               , full.names = TRUE)
+
+knitr::include_graphics(graph.find)
+
+```
+
+
+
+De meest-voorkomende zelfstandige naamwoorden geven een indicatie van de (enkelvoudige) onderwerpen die veel genoemd worden.
+
+
+```{r pl3, echo=FALSE, fig.cap=" ", out.width = '100%'}
+
+graph.find <- list.files(path = here("REPORT/EXPLORATION/"), pattern="^Occurrence_nouns.*.png"
+                               , full.names = TRUE)
+
+knitr::include_graphics(graph.find)
+
+```
+
+
+De bijvoegelijke naamwoorden zijn hier ook belangrijk.
+
+
+```{r pl4, echo=FALSE, fig.cap=" ", out.width = '100%'}
+
+graph.find <- list.files(path = here("REPORT/EXPLORATION/"), pattern="^Occurrence_adjectives.*.png"
+                               , full.names = TRUE)
+
+knitr::include_graphics(graph.find)
+
+```
+
+
+De meest belangrijke woorden. 
+
+
+```{r pl5c, echo=FALSE, fig.cap=" ", out.width = '100%'}
+
+graph.find <- list.files(path = here("REPORT/EXPLORATION/"), pattern="important_words.png"
+                               , full.names = TRUE)
+
+knitr::include_graphics(graph.find)
+
+```
+
+
+
+De meest voorkomende woordcombinaties. 
+
+
+```{r pl5, echo=FALSE, fig.cap=" ", out.width = '100%'}
+
+graph.find <- list.files(path = here("REPORT/EXPLORATION/"), pattern="^Cooccurrences_ngram_bigram.*.png"
+                               , full.names = TRUE)
+
+knitr::include_graphics(graph.find)
+
+```
+
+
+In deze figuur zien we ook de meest voorkomende woordcombinaties en hoe deze zich tot elkaar verhouden. Hoe zwarter de pijl is hoe vaker deze combinatie voorkomt.
+
+
+```{r pl6, echo=FALSE, fig.cap=" ", out.width = '100%'}
+
+graph.find <- list.files(path = here("REPORT/EXPLORATION/"), pattern="^Cooccurrence_bigram_network_markov.*.png"
+                               , full.names = TRUE)
+
+knitr::include_graphics(graph.find)
+
+```
+
+
+
+
+In onderstaande figuur zien we welke woordcombinaties binnen een zin er zijn als we kijken naar bijvoegelijke en zelfstandige naamwoorden.
+
+Hoe dikker en dus roder de lijn is hoe vaker deze woordcombinatie genoemd wordt.
+
+
+```{r pl8, echo=FALSE, fig.cap=" ", out.width = '100%'}
+
+
+graph.find <- list.files(path = here("REPORT/EXPLORATION/"), pattern="^Cooccurrences within sentence max 2 words apart.*.png"
+                               , full.names = TRUE)
+
+knitr::include_graphics(graph.find)
+
+```
+
+In dit figuur zien we clusters van woorden die vaak samen voorkomen en hoe die zich tot elkaar verhouden. De y-as is een relatieve maat.
+
+```{r pl9, echo=FALSE, fig.cap=" ", out.width = '100%'}
+
+
+graph.find <- list.files(path = here("REPORT/EXPLORATION/"), pattern="^Cooccurences_communities_of_words.*.png"
+                               , full.names = TRUE)
+
+knitr::include_graphics(graph.find)
+
+```
+
+
+Ondertstaande figuur geeft de woordcombinatie waarin een negatief woord voorkomt.  
+
+```{r pl9a, echo=FALSE, fig.cap=" ", out.width = '100%'}
+
+graph.find <- list.files(path = here("REPORT/EXPLORATION/"), pattern="^coocurrence_words_linked_to_negative_terms.*.png"
+                               , full.names = TRUE)
+
+knitr::include_graphics(graph.find)
+
+```
+
+
+
+
+## Sentence embedding
+
+Sentence embedding: vindt groepen van zinnen die erg op elkaar lijken en geef de essentie van deze groepen weer.
+
+In dit figuur zie je het aantal groepen en het aandeel van de zinnen in ieder cluster.
+
+```{r pl10, echo=FALSE, fig.cap=" ", out.width = '100%'}
+files.distribution <- list.files(path = wordembedding.path, pattern = "*cluster_distribution_sentences.png", full.names = TRUE)
+knitr::include_graphics(files.distribution)
+
+```
+
+Hieronder volgt een beschrijving van de clusters, met daarin de vijf meest representatieve uitspraken.
+
+```{r}
+files.extractions <- list.files(path = wordembedding.path, pattern = "*cluster-bestextractions", full.names = TRUE)
+read.csv(files.extractions)%>%
+select(best_cl, txt_condensed) %>%
+head(60)
+```
+De verdeling van het sentiment over de clusters is als volgt:
+
+```{r pl10a, echo=FALSE, fig.cap=" ", out.width = '100%'}
+
+files.distribution <- list.files(path = wordembedding.path, pattern = "*sentence_sentiment_dispersion.png", full.names = TRUE)
+knitr::include_graphics(files.distribution)
+```
+
+Voor elk cluster kan een netwerk grafiek worden gemaakt van de woordcombinaties. Hoe dikker en dus roder de lijn is hoe vaker deze woordcombinatie genoemd wordt.
+
+```{r pl12aa, echo=FALSE, fig.cap=" ", out.width = '100%'}
+files.embeddingsclusters <- list.files(path = wordembedding.path, pattern = "cooccurrences_vicinity_within_document", full.names = TRUE)
+files.embeddingsclusters %>%
+  map(function(x) knitr::include_graphics(x))
+```
+
+
+## Topic modelling
+
+Hier worden er groepen gemaakt op basis van woorden (topics) in de hele tekstcollectie. Van ieder topic worden de meest voorkomende woorden (kans distributie) getoond in onderstaand figuur.
+
+
+```{r pl11, echo=FALSE, fig.cap=" ", out.width = '100%'}
+files.topicterms <- list.files(path = topicmodels.path, pattern="^Topic_Models_LDA.*topics_terms_probabilities.png"
+                               , full.names = TRUE)
+knitr::include_graphics(files.topicterms)
+
+
+```
+
+In onderstaande figuren zie je van ieder topic een correlatieplot
+Groen is een positieve correlatie, woorden die vaak samen voorkomen. 
+rood is een negatieve correlatie, woorden die niet vaak samen voorkomen
+Hoe dikker de lijn, des te sterker is de correlatie, dus hoe waarschijnlijker (groen), of onwaarschijnlijker (rood) dat die samen genoemd worden
+
+```{r pl12, echo=FALSE, fig.cap=" ", out.width = '100%'}
+files.topicterms <- list.files(path = topicmodels.path, pattern = "correlation", full.names = TRUE)
+files.topicterms %>%
+  map(function(x) knitr::include_graphics(x))
+```
+
+Van ieder topic ook een wordcloud met de meestvoorkomende woorden in dit topic. 
+
+```{r pl13, echo=FALSE, fig.cap=" ", out.width = '100%', results='asis'}
+files.topiccloud <- list.files(path = topicmodels.path, pattern = "wordcloud_topic", full.names = TRUE)
+files.topiccloud %>%
+  map(function(x) knitr::include_graphics(x))
+```
+
+Biterm topic modeling: hierbij worden er groepen gemaakt op basis van de combinatie 2 woorden
+
+Hier zien we:..
+
+
+```{r pl14, echo=FALSE, fig.cap=" ", out.width = '100%'}
+knitr::include_graphics(here("/REPORT/TOPICMODEL/Topic_Models_Biterm.png"))
+```
