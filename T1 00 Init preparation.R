@@ -385,7 +385,7 @@ words_fortify<-c("zeer", "heel", "extreem", "lang", "super", "top", "echt", "per
                  "onwijs", "onwijze", "geweldig", "geweldige", "enorm", "enorme", "fijn", "fijne", "dramatisch", "verschrikkelijk")
 
 #contiguous sequences of tokens in text collection (cooccurrences)
-source(here::here('T1 01 Preparation Ngram.R'))
+source(here::here('T1 01 Preparation ngram.R'))
 
 #----------------------------------------------------------------------------------------------
 

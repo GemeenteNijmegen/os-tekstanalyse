@@ -36,8 +36,8 @@
 # Word2Vec takes texts as training data for a neural network. 
 # The resulting embedding captures whether words appear in similar contexts. 
 # Word2Vec is a predictive model
-scope<-"WORD2VEC" #default 
-scope.prefix<-"W2V"
+# scope<-"WORD2VEC" #default 
+# scope.prefix<-"W2V"
 
 #use pretrained Word2Vec-model Open Raadsinformatie
 #why/when? if you need a policy perspective 
@@ -50,8 +50,8 @@ w2v_pretrained<-FALSE #(FALSE (default), TRUE (much slower!))
 # Global Vectors (GloVe)
 # GloVe focuses on words co-occurrences over the whole corpus. 
 # Its embeddings relate to the probabilities that two words appear together.
-#scope<-"GLOVE"
-#scope.prefix<-"GLV"
+scope<-"GLOVE"
+scope.prefix<-"GLV"
 
 #------------------------------
 

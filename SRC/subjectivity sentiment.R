@@ -22,8 +22,8 @@ range_labs<-c("low-end", "mid-range", "high-end")
 if(file.exists(src_lx)){
   #load pre-assembled lexicon
   load(file=src_lx)
-  load(file=paste0(lexicon.dir,"FEEL_nl_tr.Rda"))
-  load(file=paste0(lexicon.dir,"valShifters.Rda"))
+  load(file=paste0(lexicon.dir,"FEEL_nl_tr.rda"))
+  load(file=paste0(lexicon.dir,"valShifters.rda"))
 } else {
   source('SRC/lexicon.R')  
 }
